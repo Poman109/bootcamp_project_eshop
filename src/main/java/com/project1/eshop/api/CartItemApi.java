@@ -51,4 +51,15 @@ public class CartItemApi {
 
     }
 
+    @DeleteMapping("/{pid}")
+    public SuccessResponseDto deleteCartItem(JwtAuthenticationToken jwtToken, @PathVariable Integer pid){
+        FirebaseUserData firebaseUserData = JwtUtil.getFirebaseUserData(jwtToken);
+        if(cartItemService.deletedCartItem(firebaseUserData,pid)){
+            return new SuccessResponseDto();
+        }
+        throw new UpdateCartItemNotAllowedException("Cannot delete cart item.");
+    }
+
+
+
 }

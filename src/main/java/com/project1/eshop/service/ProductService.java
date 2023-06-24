@@ -11,4 +11,6 @@ public interface ProductService {
     ProductDetailsData getProductEntity(Integer pid);
 
     ProductEntity getProductEntityByPid(Integer pid);
+
+    public Boolean checkProductEntityByPid(Integer pid);
 }

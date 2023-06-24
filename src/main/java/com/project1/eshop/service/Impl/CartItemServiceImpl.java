@@ -96,6 +96,21 @@ public class CartItemServiceImpl implements CartItemService{
         }
     }
 
+    @Override
+    public Boolean deletedCartItem(FirebaseUserData firebaseUserData, Integer pid){
+        UserEntity userEntity =userService.getEntityByFirebaseUserData(firebaseUserData);
+
+        if(productService.checkProductEntityByPid(pid)) {
+
+            Optional<CartItemEntity> optionalCartItemEntity = cartItemRepository.findByUserUidAndProductPid(userEntity.getUid(), pid);
+            if (optionalCartItemEntity.isEmpty()) {
+                throw new UpdateCartItemNotAllowedException("No product id :" + pid + "in cart.");
+            }
+            cartItemRepository.delete(optionalCartItemEntity.get());
+        }
+        return true;
+    }
+
 
 
 

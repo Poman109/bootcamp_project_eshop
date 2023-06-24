@@ -50,6 +50,17 @@ public class ProductServiceImpl implements ProductService {
         throw new ProductNotFoundException("Cannot found productId: " + pid);
     }
 
+    @Override
+    public Boolean checkProductEntityByPid(Integer pid) {
+
+        Optional<ProductEntity> productEntity = productRepository.findByPid(pid);
+        if (productEntity.isPresent()) {
+            return true;
+        }
+        throw new ProductNotFoundException("Cannot found productId: " + pid);
+    }
+
+
 
 
 
