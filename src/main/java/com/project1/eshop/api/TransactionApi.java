@@ -45,8 +45,11 @@ public class TransactionApi {
         }
     }
 
-
-
+    @PatchMapping("/{tid}/finish")
+    public TransactionResponseDto finishPayment(JwtAuthenticationToken jwtToken, @PathVariable Integer tid){
+        FirebaseUserData firebaseUserData = JwtUtil.getFirebaseUserData(jwtToken);
+        return new TransactionResponseDto(transactionService.finishPayment(firebaseUserData,tid));
+    }
 
 
 

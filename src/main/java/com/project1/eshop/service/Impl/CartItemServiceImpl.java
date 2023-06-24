@@ -121,7 +121,11 @@ public class CartItemServiceImpl implements CartItemService{
         return optionalCartItemEntityList.get();
     }
 
+    @Override
+    public void deletedUserCart(UserEntity userEntity){
+     cartItemRepository.deleteByUser(userEntity);
 
+    }
 
 
 

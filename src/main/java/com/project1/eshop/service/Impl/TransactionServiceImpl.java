@@ -10,6 +10,7 @@ import com.project1.eshop.data.user.entity.UserEntity;
 import com.project1.eshop.exception.TransactionNotAllowedException;
 import com.project1.eshop.repository.TransactionRepository;
 import com.project1.eshop.service.*;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -80,6 +81,24 @@ public class TransactionServiceImpl implements TransactionService {
             optionalTransactionEntity.get().setStatus(TransactionStatus.PROCESSING);
             transactionRepository.save(optionalTransactionEntity.get());
             return true;
+        }
+
+    }
+
+
+    @Override
+    @Transactional
+    public TransactionDetailsData finishPayment(FirebaseUserData firebaseUserData, Integer tid) {
+        UserEntity userEntity = userService.getEntityByFirebaseUserData(firebaseUserData);
+        Optional<TransactionEntity> optionalTransactionEntity = transactionRepository.findByTidAndUser(tid, userEntity);
+        if (optionalTransactionEntity.isEmpty()) {
+            throw new TransactionNotAllowedException("No this transaction in account.");
+        } else {
+
+            optionalTransactionEntity.get().setStatus(TransactionStatus.SUCCESS);
+            cartItemService.deletedUserCart(userEntity);
+            transactionRepository.save(optionalTransactionEntity.get());
+            return new TransactionDetailsData(optionalTransactionEntity.get());
         }
     }
 
