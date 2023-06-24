@@ -112,6 +112,14 @@ public class CartItemServiceImpl implements CartItemService{
     }
 
 
+    @Override
+    public List<CartItemEntity> getCartItemByUid(Integer userId){
+        Optional<List<CartItemEntity>> optionalCartItemEntityList =  cartItemRepository.findByUserUid(userId);
+        if(optionalCartItemEntityList.isEmpty()){
+            throw new ProductNotFoundException("No item in cart.");
+        }
+        return optionalCartItemEntityList.get();
+    }
 
 
 

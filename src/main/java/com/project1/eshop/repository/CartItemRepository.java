@@ -14,4 +14,6 @@ public interface CartItemRepository extends CrudRepository<CartItemEntity,Intege
     Optional<CartItemEntity> findByUserUidAndProductPid(Integer uid, Integer pid);
 
     List<CartItemEntity> findAllByUser(UserEntity userEntity);
+
+    Optional<List<CartItemEntity>> findByUserUid(Integer userId);
 }

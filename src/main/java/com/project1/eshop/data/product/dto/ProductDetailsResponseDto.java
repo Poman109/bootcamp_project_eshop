@@ -2,6 +2,8 @@ package com.project1.eshop.data.product.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project1.eshop.data.product.domainObject.ProductDetailsData;
+import com.project1.eshop.data.transaction.domainObject.TransactionDetailsData;
+import com.project1.eshop.data.transactionProduct.domainObject.TransactionProductDetailsData;
 
 import java.math.BigDecimal;
 
@@ -22,6 +24,17 @@ public class ProductDetailsResponseDto {
         this.price = productDetailsData.getPrice();
         this.stock = productDetailsData.getStock();
     }
+
+    public ProductDetailsResponseDto(TransactionProductDetailsData transactionProductDetailsData){
+        this.pid = transactionProductDetailsData.getPid();
+        this.name = transactionProductDetailsData.getName();
+        this.description = transactionProductDetailsData.getDescription();
+        this.imageUrl = transactionProductDetailsData.getImageUrl();
+        this.price = transactionProductDetailsData.getPrice();
+        this.stock = transactionProductDetailsData.getStock();
+    }
+
+
 
     public Integer getPid() {
         return pid;
