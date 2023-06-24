@@ -60,8 +60,16 @@ public class ProductServiceImpl implements ProductService {
         throw new ProductNotFoundException("Cannot found productId: " + pid);
     }
 
-
-
+    @Override
+    public void deductProductStock(Integer pid, Integer quantity){
+        Optional<ProductEntity> productEntity = productRepository.findByPid(pid);
+        if (productEntity.isPresent()) {
+            productEntity.get().setStock(productEntity.get().getStock()-quantity);
+            productRepository.save(productEntity.get());
+            return;
+        }
+        throw new ProductNotFoundException("Product Sold out");
+    }
 
 
 

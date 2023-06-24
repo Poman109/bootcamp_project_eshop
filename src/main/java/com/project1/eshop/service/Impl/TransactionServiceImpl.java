@@ -1,6 +1,7 @@
 package com.project1.eshop.service.Impl;
 
 import com.project1.eshop.data.cartItem.entity.CartItemEntity;
+import com.project1.eshop.data.transaction.TransactionStatus;
 import com.project1.eshop.data.transaction.domainObject.TransactionDetailsData;
 import com.project1.eshop.data.transaction.entity.TransactionEntity;
 import com.project1.eshop.data.transactionProduct.entity.TransactionProductEntity;
@@ -8,10 +9,7 @@ import com.project1.eshop.data.user.domainObject.FirebaseUserData;
 import com.project1.eshop.data.user.entity.UserEntity;
 import com.project1.eshop.exception.TransactionNotAllowedException;
 import com.project1.eshop.repository.TransactionRepository;
-import com.project1.eshop.service.CartItemService;
-import com.project1.eshop.service.TransactionProductService;
-import com.project1.eshop.service.TransactionService;
-import com.project1.eshop.service.UserService;
+import com.project1.eshop.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,12 +18,15 @@ import java.util.Optional;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
+    private final ProductService productService;
     private final TransactionRepository transactionRepository;
     private final UserService userService;
     private final CartItemService cartItemService;
     private final TransactionProductService transactionProductService;
     @Autowired
-    public TransactionServiceImpl(TransactionRepository transactionRepository, UserService userService, CartItemService cartItemService, TransactionProductService transactionProductService) {
+    public TransactionServiceImpl(ProductService productService, TransactionRepository transactionRepository, UserService userService,
+                                  CartItemService cartItemService, TransactionProductService transactionProductService) {
+        this.productService = productService;
         this.transactionRepository = transactionRepository;
         this.userService = userService;
         this.cartItemService = cartItemService;
@@ -62,6 +63,23 @@ public class TransactionServiceImpl implements TransactionService {
             throw new TransactionNotAllowedException("No this transaction in account.");
         } else{
             return new TransactionDetailsData(optionalTransactionEntity.get());
+        }
+    }
+
+    @Override
+    public Boolean updateTransactionStatus(FirebaseUserData firebaseUserData, Integer tid){
+        UserEntity userEntity =userService.getEntityByFirebaseUserData(firebaseUserData);
+        Optional<TransactionEntity> optionalTransactionEntity = transactionRepository.findByTidAndUser(tid,userEntity);
+        if(optionalTransactionEntity.isEmpty()){
+            throw new TransactionNotAllowedException("No this transaction in account.");
+        } else {
+            List<TransactionProductEntity> transactionProductEntityList = optionalTransactionEntity.get().getTransactionProductList();
+            for (TransactionProductEntity transactionProduct:transactionProductEntityList){
+                productService.deductProductStock(transactionProduct.getPid(),transactionProduct.getQuantity());
+            }
+            optionalTransactionEntity.get().setStatus(TransactionStatus.PROCESSING);
+            transactionRepository.save(optionalTransactionEntity.get());
+            return true;
         }
     }
 
