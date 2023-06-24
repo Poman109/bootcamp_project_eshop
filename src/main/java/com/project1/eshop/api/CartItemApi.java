@@ -43,6 +43,12 @@ public class CartItemApi {
         return cartItemDetailResponseArray;
     }
 
+    @PatchMapping("/{pid}/{quantity}")
+    public CreateCartItemResponseDto updateCartItemQuantity(JwtAuthenticationToken jwtToken, @PathVariable Integer pid, @PathVariable Integer quantity) {
+        FirebaseUserData firebaseUserData = JwtUtil.getFirebaseUserData(jwtToken);
 
+        return new CreateCartItemResponseDto(cartItemService.updateCartItemQuantity(firebaseUserData, pid, quantity));
+
+    }
 
 }

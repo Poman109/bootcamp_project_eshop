@@ -74,6 +74,28 @@ public class CartItemServiceImpl implements CartItemService{
         }
     }
 
+    @Override
+    public CartItemDetailsData updateCartItemQuantity(FirebaseUserData firebaseUserData, Integer pid, Integer quantity) {
+        UserEntity userEntity = userService.getEntityByFirebaseUserData(firebaseUserData);
+        if (productService.getProductEntity(pid).getStock() < quantity) {
+            throw new UpdateCartItemNotAllowedException("Not enough stock!");
+        }
+
+        Optional<CartItemEntity> optionalCartItemEntity = cartItemRepository.findByUserUidAndProductPid(userEntity.getUid(), pid);
+        if (optionalCartItemEntity.isEmpty()) {
+            throw new ProductNotFoundException("No this product in cart");
+        } else {
+            if (quantity == 0) {
+                optionalCartItemEntity.get().setQuantity(quantity);
+                cartItemRepository.delete(optionalCartItemEntity.get());
+                return new CartItemDetailsData(optionalCartItemEntity.get());
+            }
+            optionalCartItemEntity.get().setQuantity(quantity);
+            cartItemRepository.save(optionalCartItemEntity.get());
+            return new CartItemDetailsData(optionalCartItemEntity.get());
+        }
+    }
+
 
 
 
