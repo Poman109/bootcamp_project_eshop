@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -52,4 +53,18 @@ public class TransactionServiceImpl implements TransactionService {
 
         return new TransactionDetailsData(transaction);
     }
+
+    @Override
+    public TransactionDetailsData getTransactionById(FirebaseUserData firebaseUserData, Integer tid){
+        UserEntity userEntity =userService.getEntityByFirebaseUserData(firebaseUserData);
+        Optional<TransactionEntity> optionalTransactionEntity = transactionRepository.findByTidAndUser(tid,userEntity);
+        if (optionalTransactionEntity.isEmpty()){
+            throw new TransactionNotAllowedException("No this transaction in account.");
+        } else{
+            return new TransactionDetailsData(optionalTransactionEntity.get());
+        }
+    }
+
+
+
 }

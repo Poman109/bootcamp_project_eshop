@@ -5,4 +5,6 @@ import com.project1.eshop.data.user.domainObject.FirebaseUserData;
 
 public interface TransactionService {
     TransactionDetailsData createTransaction(FirebaseUserData firebaseUserData);
+
+    TransactionDetailsData getTransactionById(FirebaseUserData firebaseUserData, Integer tid);
 }
