@@ -67,10 +67,16 @@ public class TransactionServiceImpl implements TransactionService {
         }
     }
 
+    @Transactional
     @Override
     public Boolean updateTransactionStatus(FirebaseUserData firebaseUserData, Integer tid){
         UserEntity userEntity =userService.getEntityByFirebaseUserData(firebaseUserData);
         Optional<TransactionEntity> optionalTransactionEntity = transactionRepository.findByTidAndUser(tid,userEntity);
+
+        if (optionalTransactionEntity.get().getStatus() !=TransactionStatus.PREPARE){
+            throw new TransactionNotAllowedException("Transaction status not match");
+        }
+
         if(optionalTransactionEntity.isEmpty()){
             throw new TransactionNotAllowedException("No this transaction in account.");
         } else {
