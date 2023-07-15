@@ -59,35 +59,28 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public TransactionDetailsData getTransactionById(FirebaseUserData firebaseUserData, Integer tid){
         UserEntity userEntity =userService.getEntityByFirebaseUserData(firebaseUserData);
-        Optional<TransactionEntity> optionalTransactionEntity = transactionRepository.findByTidAndUser(tid,userEntity);
-        if (optionalTransactionEntity.isEmpty()){
-            throw new TransactionNotAllowedException("No this transaction in account.");
-        } else{
-            return new TransactionDetailsData(optionalTransactionEntity.get());
-        }
+
+            return new TransactionDetailsData(getEntityByTidAndUser(tid,userEntity));
+
     }
 
     @Transactional
     @Override
     public Boolean updateTransactionStatus(FirebaseUserData firebaseUserData, Integer tid){
         UserEntity userEntity =userService.getEntityByFirebaseUserData(firebaseUserData);
-        Optional<TransactionEntity> optionalTransactionEntity = transactionRepository.findByTidAndUser(tid,userEntity);
+        TransactionEntity transactionEntity = getEntityByTidAndUser(tid,userEntity);
 
-        if (optionalTransactionEntity.get().getStatus() !=TransactionStatus.PREPARE){
+        if(transactionEntity.getStatus() !=TransactionStatus.PREPARE){
             throw new TransactionNotAllowedException("Transaction status not match");
         }
-
-        if(optionalTransactionEntity.isEmpty()){
-            throw new TransactionNotAllowedException("No this transaction in account.");
-        } else {
-            List<TransactionProductEntity> transactionProductEntityList = optionalTransactionEntity.get().getTransactionProductList();
-            for (TransactionProductEntity transactionProduct:transactionProductEntityList){
+        for (TransactionProductEntity transactionProduct:transactionEntity.getTransactionProductList()){
                 productService.deductProductStock(transactionProduct.getPid(),transactionProduct.getQuantity());
             }
-            optionalTransactionEntity.get().setStatus(TransactionStatus.PROCESSING);
-            transactionRepository.save(optionalTransactionEntity.get());
-            return true;
-        }
+        transactionEntity.setStatus(TransactionStatus.PROCESSING);
+        transactionRepository.save(transactionEntity);
+
+        return true;
+
 
     }
 
@@ -96,17 +89,30 @@ public class TransactionServiceImpl implements TransactionService {
     @Transactional
     public TransactionDetailsData finishPayment(FirebaseUserData firebaseUserData, Integer tid) {
         UserEntity userEntity = userService.getEntityByFirebaseUserData(firebaseUserData);
-        Optional<TransactionEntity> optionalTransactionEntity = transactionRepository.findByTidAndUser(tid, userEntity);
-        if (optionalTransactionEntity.isEmpty()) {
-            throw new TransactionNotAllowedException("No this transaction in account.");
-        } else {
+        TransactionEntity transactionEntity = getEntityByTidAndUser(tid,userEntity);
 
-            optionalTransactionEntity.get().setStatus(TransactionStatus.SUCCESS);
-            cartItemService.deletedUserCart(userEntity);
-            transactionRepository.save(optionalTransactionEntity.get());
-            return new TransactionDetailsData(optionalTransactionEntity.get());
+        if(transactionEntity.getStatus() !=TransactionStatus.PROCESSING){
+            throw new TransactionNotAllowedException("Transaction status not match");
+        }
+
+        cartItemService.deletedUserCart(userEntity);
+        transactionEntity.setStatus(TransactionStatus.SUCCESS);
+        return new TransactionDetailsData(transactionEntity);
+
+    }
+
+
+    public TransactionEntity getEntityByTidAndUser(Integer tid,UserEntity userEntity){
+        Optional<TransactionEntity> optionalTransactionEntity = transactionRepository.findByTidAndUser(tid,userEntity);
+        if (optionalTransactionEntity.isEmpty()){
+            throw new TransactionNotAllowedException("No this transaction in account.");
+        } else{
+            return optionalTransactionEntity.get();
         }
     }
+
+
+
 
 
 
