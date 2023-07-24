@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin({"http://localhost:5173"})
 @RestController
 @RequestMapping("transaction")
 public class TransactionApi {
