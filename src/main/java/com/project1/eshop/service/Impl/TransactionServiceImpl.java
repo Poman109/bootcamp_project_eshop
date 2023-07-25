@@ -56,6 +56,7 @@ public class TransactionServiceImpl implements TransactionService {
         return new TransactionDetailsData(transaction);
     }
 
+    @Transactional
     @Override
     public TransactionDetailsData getTransactionById(FirebaseUserData firebaseUserData, Integer tid){
         UserEntity userEntity =userService.getEntityByFirebaseUserData(firebaseUserData);

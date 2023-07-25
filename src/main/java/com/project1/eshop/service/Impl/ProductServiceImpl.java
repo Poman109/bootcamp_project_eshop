@@ -61,16 +61,22 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Boolean deductProductStock(Integer pid, Integer quantity){
-        Optional<ProductEntity> productEntity = productRepository.findByPid(pid);
-        if (productEntity.isPresent()) {
-            if (productEntity.get().getStock() < quantity){
-                productEntity.get().setStock(productEntity.get().getStock()-quantity);
-                productRepository.save(productEntity.get());
-                return true;
+    public void deductProductStock(Integer pid, Integer quantity){
+        Optional<ProductEntity> productEntityOptional = productRepository.findByPid(pid);
+
+        if (productEntityOptional.isPresent()) {
+            ProductEntity productEntity = productEntityOptional.get();
+            int availableStock = productEntity.getStock();
+
+            if (quantity > 0 && quantity <= availableStock) {
+                productEntity.setStock(availableStock - quantity);
+                productRepository.save(productEntity);
+            } else {
+                throw new ProductNotFoundException("Not enough stock");
             }
+        } else {
+            throw new ProductNotFoundException("Cannot find productId: " + pid);
         }
-        throw new ProductNotFoundException("Cannot found productId: " + pid);
     }
 
 

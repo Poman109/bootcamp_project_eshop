@@ -14,5 +14,5 @@ public interface ProductService {
 
     public Boolean checkProductEntityByPid(Integer pid);
 
-    Boolean deductProductStock(Integer pid, Integer quantity);
+    void deductProductStock(Integer pid, Integer quantity);
 }
