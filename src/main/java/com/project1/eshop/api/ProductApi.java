@@ -1,5 +1,6 @@
 package com.project1.eshop.api;
 
+import com.project1.eshop.config.EnvConfig;
 import com.project1.eshop.data.product.domainObject.ProductDetailsData;
 import com.project1.eshop.data.product.dto.GetAllProductResponseDto;
 import com.project1.eshop.data.product.dto.ProductDetailsResponseDto;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@CrossOrigin({"http://localhost:5173"})
+@CrossOrigin({EnvConfig.devConfig, EnvConfig.prodConfig})
 @RestController
 @RequestMapping("/public/product")
 public class ProductApi {

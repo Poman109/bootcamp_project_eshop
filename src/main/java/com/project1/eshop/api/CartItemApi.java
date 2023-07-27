@@ -1,5 +1,6 @@
 package com.project1.eshop.api;
 
+import com.project1.eshop.config.EnvConfig;
 import com.project1.eshop.data.SuccessResponseDto;
 import com.project1.eshop.data.cartItem.domainObject.CartItemDetailsData;
 import com.project1.eshop.data.cartItem.dto.CreateCartItemResponseDto;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@CrossOrigin({"http://localhost:5173"})
+@CrossOrigin({EnvConfig.devConfig, EnvConfig.prodConfig})
 @RestController
 @RequestMapping("/cart")
 public class CartItemApi {

@@ -1,5 +1,6 @@
 package com.project1.eshop.api;
 
+import com.project1.eshop.config.EnvConfig;
 import com.project1.eshop.data.SuccessResponseDto;
 import com.project1.eshop.data.transaction.domainObject.TransactionDetailsData;
 import com.project1.eshop.data.transaction.dto.TransactionResponseDto;
@@ -11,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin({"http://localhost:5173"})
+@CrossOrigin({EnvConfig.devConfig, EnvConfig.prodConfig})
 @RestController
 @RequestMapping("transaction")
 public class TransactionApi {
